@@ -1,6 +1,8 @@
 package coap
 
-/*
+import "fmt"
+import "github.com/ugorji/go/codec"
+
 var path = "/oic/d"
 var udpServer = "127.0.0.1:52593"
 var tcpServer = "127.0.0.1:40993"
@@ -34,11 +36,15 @@ func decodeMsg(resp Message) {
 				fmt.Printf("payload type: %T\n", m)
 				fmt.Printf("payload value: %v\n", m)
 			}
+		case TextPlain, AppLinkFormat:
+			fmt.Printf("payload value: \n%v\n", string(resp.Payload()))
 		}
+
 	}
 	fmt.Printf("resp raw: %v\n", resp)
 }
 
+/*
 func observe(w ResponseWriter, req *Request) {
 	fmt.Printf("OBSERVE : %v\n", req.Client.RemoteAddr())
 	decodeMsg(req.Msg)
