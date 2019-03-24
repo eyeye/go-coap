@@ -341,11 +341,11 @@ func (co *ClientConn) DeleteWithContext(ctx context.Context, path string) (Messa
 	return co.commander.DeleteWithContext(ctx, path)
 }
 
-func (co *ClientConn) Observe(path string, observeFunc func(req *Request)) (*Observation, error) {
+func (co *ClientConn) Observe(path string, observeFunc func(w ResponseWriter, req *Request)) (*Observation, error) {
 	return co.ObserveWithContext(context.Background(), path, observeFunc)
 }
 
-func (co *ClientConn) ObserveWithContext(ctx context.Context, path string, observeFunc func(req *Request)) (*Observation, error) {
+func (co *ClientConn) ObserveWithContext(ctx context.Context, path string, observeFunc func(w ResponseWriter, req *Request)) (*Observation, error) {
 	if co.multicast {
 		return nil, ErrNotSupported
 	}
