@@ -213,13 +213,13 @@ func (o *Observation) CancelWithContext(ctx context.Context) error {
 	return err2
 }
 
-func (cc *ClientCommander) Observe(path string, observeFunc func(req *Request)) (*Observation, error) {
+func (cc *ClientCommander) Observe(path string, observeFunc func(w ResponseWriter, req *Request)) (*Observation, error) {
 	return cc.ObserveWithContext(context.Background(), path, observeFunc)
 }
 
 // ObserveContext subscribe to severon path. After subscription and every change on path,
 // server sends immediately response
-func (cc *ClientCommander) ObserveWithContext(ctx context.Context, path string, observeFunc func(req *Request)) (*Observation, error) {
+func (cc *ClientCommander) ObserveWithContext(ctx context.Context, path string, observeFunc func(w ResponseWriter, req *Request)) (*Observation, error) {
 	req, err := cc.NewGetRequest(path)
 	if err != nil {
 		return nil, err
@@ -282,12 +282,12 @@ func (cc *ClientCommander) ObserveWithContext(ctx context.Context, path string, 
 			//during processing observation, check if notification is still valid
 			if bytes.Equal(resp.Option(ETag).([]byte), r.Msg.Option(ETag).([]byte)) {
 				if setObsSequence() {
-					observeFunc(&Request{Msg: resp, Client: r.Client, Ctx: r.Ctx, Sequence: r.Sequence})
+					observeFunc(w, &Request{Msg: resp, Client: r.Client, Ctx: r.Ctx, Sequence: r.Sequence})
 				}
 			}
 		default:
 			if setObsSequence() {
-				observeFunc(&Request{Msg: resp, Client: r.Client, Ctx: r.Ctx, Sequence: r.Sequence})
+				observeFunc(w, &Request{Msg: resp, Client: r.Client, Ctx: r.Ctx, Sequence: r.Sequence})
 			}
 		}
 		return
